@@ -12,7 +12,8 @@ import os
 import posixpath
 import sys
 import warnings
-from typing import Iterable, cast
+
+from typing import cast, Iterable, Tuple
 
 from docutils import nodes
 from docutils.writers.html5_polyglot import HTMLTranslator as BaseTranslator
