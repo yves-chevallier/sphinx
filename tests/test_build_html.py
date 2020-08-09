@@ -247,7 +247,7 @@ def test_html4_output(app, status, warning):
         # ``seealso`` directive
         (".//div/p[@class='admonition-title']", 'See also'),
         # a ``hlist`` directive
-        (".//table[@class='hlist']/tbody/tr/td/ul/li/p", '^This$'),
+        (".//div[@class='hlist']/ul/li/p", '^This$'),
         # a ``centered`` directive
         (".//p[@class='centered']/strong", 'LICENSE'),
         # a glossary

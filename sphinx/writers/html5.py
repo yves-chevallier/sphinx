@@ -600,7 +600,7 @@ class HTML5Translator(SphinxTranslator, BaseTranslator):
     def visit_hlist(self, node: Element) -> None:
         cols = node['columns']
         self.body.append((
-            f'<div style="-webkit-column-count: {cols};'
+            f'<div class="hlist" style="-webkit-column-count: {cols};'
             f'-moz-column-count: {cols}; column-count: {cols};">'
         ))
 
