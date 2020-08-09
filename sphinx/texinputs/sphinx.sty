@@ -425,7 +425,6 @@
  \@namedef{p@#3}{\@nameuse{p@#2}#4\@nameuse{the#2}#5}%
 }%
 
-
 %% MAXLISTDEPTH
 %
 % remove LaTeX's cap on nesting depth if 'maxlistdepth' key used.
@@ -500,7 +499,6 @@
   \PackageInfo{sphinx}{maximal list depth extended to \spx@opt@maxlistdepth}%
 \@gobble\@nnil
 }
-
 
 %% INDEX, BIBLIOGRAPHY, APPENDIX, TABLE OF CONTENTS
 %
@@ -827,6 +825,53 @@
   {\abovecaptionskip\smallskipamount
    \belowcaptionskip\smallskipamount}
 
+%% HORIZONTAL LISTS
+%
+% Provide a new environment to automatically balance enumerate/itemize
+% across multiple columns.
+\usepackage{regexpatch}
+\usepackage{keyval}
+\usepackage[balancingshow]{multicol}
+
+\newcounter{multicolminlines}
+\setcounter{multicolminlines}{1}
+
+\xpatchcmd\balance@columns
+   {\ifnum\dimen@<\topskip
+     \mult@info\@ne
+       {Start value
+          \the\dimen@  \space ->
+          \the\topskip \space (corrected)}%
+     \dimen@\topskip
+   \fi}
+   {\skip@\c@multicolminlines\baselineskip
+   \advance\skip@-\baselineskip
+   \advance\skip@\topskip
+   \ifnum\dimen@<\skip@
+     \mult@info\@ne
+       {Start value
+          \the\dimen@  \space ->
+          \the\skip@ \space (corrected)}%
+     \dimen@\skip@
+   \fi
+   }
+   {\typeout{Success!}}{\patchFAILED}
+
+\define@key{hlist@keys}{columns}{\def\hlist@columns{#1}}%
+\define@key{hlist@keys}{minlines}{\def\hlist@minlines{#1}}%
+
+\newcommand{\fixspacing}{\vspace{0pt plus 1filll}\mbox{}}
+
+\newenvironment{hlist}[1][]{%
+    \setkeys{hlist@keys}{columns=4,minlines=4,#1}
+    \setcounter{multicolminlines}{\hlist@minlines}
+    \begin{multicols}{\hlist@columns}
+
+}{
+
+    \fixspacing
+    \end{multicols}
+}
 
 %% CITATIONS
 %
@@ -1823,7 +1868,7 @@
    % fix a space-gobbling issue due to LaTeX's original \do@noligs
 % TODO: using \@noligs as patched by upquote.sty is now unneeded because
 % either ` and ' are escaped (non-unicode engines) or they don't build
-% ligatures (unicode engines). Thus remove this and unify handling of `, <, >, 
+% ligatures (unicode engines). Thus remove this and unify handling of `, <, >,
 % ' and - with the characters . , ; ? ! / as handled via
 % \sphinxbreaksviaactive.
 % Hence \sphinx@do@noligs will be removed, or rather replaced  with code
@@ -1905,7 +1950,7 @@
 % Special characters
 %
 % This definition prevents en-dash and em-dash TeX ligatures.
-% 
+%
 % It inserts a potential breakpoint after the hyphen. This is to keep in sync
 % with behavior in code-blocks, parsed and inline literals. For a breakpoint
 % before the hyphen use \leavevmode\kern\z@- (within \makeatletter/\makeatother)

@@ -598,10 +598,14 @@ class HTML5Translator(SphinxTranslator, BaseTranslator):
         pass
 
     def visit_hlist(self, node: Element) -> None:
-        self.body.append('<table class="hlist"><tr>')
+        cols = node['columns']
+        self.body.append((
+            f'<div style="-webkit-column-count: {cols};'
+            f'-moz-column-count: {cols}; column-count: {cols};">'
+        ))
 
     def depart_hlist(self, node: Element) -> None:
-        self.body.append('</tr></table>\n')
+        self.body.append('</div>\n')
 
     def visit_hlistcol(self, node: Element) -> None:
         self.body.append('<td>')

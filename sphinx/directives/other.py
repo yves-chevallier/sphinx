@@ -261,29 +261,22 @@ class HList(SphinxDirective):
     final_argument_whitespace = False
     option_spec = {
         'columns': int,
+        'min-lines': int,
     }
 
-    def run(self) -> List[Node]:
-        ncolumns = self.options.get('columns', 2)
-        node = nodes.paragraph()
-        node.document = self.state.document
-        self.state.nested_parse(self.content, self.content_offset, node)
-        if len(node.children) != 1 or not isinstance(node.children[0],
-                                                     nodes.bullet_list):
+    def run(self):
+        hlist = addnodes.hlist()
+        hlist['columns'] = self.options.get('columns', None)
+        hlist['min-lines'] = self.options.get('min-lines', None)
+        hlist.document = self.state.document
+        self.state.nested_parse(self.content, self.content_offset, hlist)
+
+        if len(hlist.children) != 1 or not isinstance(hlist.children[0],
+                                                      (nodes.bullet_list, nodes.enumerated_list)):
             reporter = self.state.document.reporter
             return [reporter.warning('.. hlist content is not a list', line=self.lineno)]
-        fulllist = node.children[0]
-        # create a hlist node where the items are distributed
-        npercol, nmore = divmod(len(fulllist), ncolumns)
-        index = 0
-        newnode = addnodes.hlist()
-        for column in range(ncolumns):
-            endindex = index + ((npercol + 1) if column < nmore else npercol)
-            bullet_list = nodes.bullet_list()
-            bullet_list += fulllist.children[index:endindex]
-            newnode += addnodes.hlistcol('', bullet_list)
-            index = endindex
-        return [newnode]
+
+        return [hlist]
 
 
 class Only(SphinxDirective):

@@ -1177,17 +1177,16 @@ class LaTeXTranslator(SphinxTranslator):
         self.body.append('\n\\end{center}')
 
     def visit_hlist(self, node: Element) -> None:
-        # for now, we don't support a more compact list format
-        # don't add individual itemize environments, but one for all columns
-        self.compact_list += 1
-        self.body.append('\\begin{itemize}\\setlength{\\itemsep}{0pt}'
-                         '\\setlength{\\parskip}{0pt}\n')
+        options = [
+            f'columns={node["columns"]}' if node['columns'] else '',
+            f'min-lines={mnode["min-lines"]}' if node['min-lines'] else ''
+        ]
+        self.body.append('\\begin{hlist}[%s]\n' % ','.join(options))
         if self.table:
             self.table.has_problematic = True
 
     def depart_hlist(self, node: Element) -> None:
-        self.compact_list -= 1
-        self.body.append('\\end{itemize}\n')
+        self.body.append('\\end{hlist}\n')
 
     def visit_hlistcol(self, node: Element) -> None:
         pass
