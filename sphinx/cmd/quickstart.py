@@ -59,14 +59,15 @@ EXTENSIONS = OrderedDict([
 ])
 
 DEFAULTS = {
+    'batchfile': True,
+    'dot': '_',
+    'editorconfig': True,
+    'language': None,
+    'makefile': True,
+    'master': 'index',
     'path': '.',
     'sep': False,
-    'dot': '_',
-    'language': None,
     'suffix': '.rst',
-    'master': 'index',
-    'makefile': True,
-    'batchfile': True,
 }
 
 PROMPT_PREFIX = '> '
@@ -405,18 +406,21 @@ def generate(d: Dict, overwrite: bool = True, silent: bool = False, templatedir:
         makefile_template = 'quickstart/Makefile_t'
         batchfile_template = 'quickstart/make.bat_t'
 
+    d['rsrcdir'] = 'source' if d['sep'] else '.'
+    d['rbuilddir'] = 'build' if d['sep'] else d['dot'] + 'build'
+
     if d['makefile'] is True:
-        d['rsrcdir'] = 'source' if d['sep'] else '.'
-        d['rbuilddir'] = 'build' if d['sep'] else d['dot'] + 'build'
         # use binary mode, to avoid writing \r\n on Windows
         write_file(path.join(d['path'], 'Makefile'),
                    template.render(makefile_template, d), '\n')
 
     if d['batchfile'] is True:
-        d['rsrcdir'] = 'source' if d['sep'] else '.'
-        d['rbuilddir'] = 'build' if d['sep'] else d['dot'] + 'build'
         write_file(path.join(d['path'], 'make.bat'),
                    template.render(batchfile_template, d), '\r\n')
+
+    if d['editorconfig'] is True:
+        write_file(path.join(d['path'], '.editorconfig'),
+                   template.render('quickstart/editorconfig_t', d), '\n')
 
     if silent:
         return

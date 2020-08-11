@@ -123,6 +123,7 @@ def test_quickstart_defaults(tempdir):
     assert (tempdir / 'index.rst').isfile()
     assert (tempdir / 'Makefile').isfile()
     assert (tempdir / 'make.bat').isfile()
+    assert (tempdir / '.editorconfig').isfile()
 
 
 def test_quickstart_all_answers(tempdir):
